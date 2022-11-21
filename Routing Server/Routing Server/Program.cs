@@ -19,34 +19,35 @@ namespace Routing_Server
 
         static void Main(string[] args)
         {
-
+            string openRouteUrl = "https://api.openrouteservice.org/";
             string bikeUrl = "https://api.jcdecaux.com/vls/v3/";
             string query = "contracts?apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
             string response = callApi(bikeUrl, query).Result;
 
             List<Contracts> contracts = JsonSerializer.Deserialize<List<Contracts>>(response);
+            List<Station> stations = new List<Station>();
 
             foreach (Contracts contract in contracts)
             {
-                Console.WriteLine(contract.ToString());
+                string queryStation = "stations?contract=" + contract + "&apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
+                string responseStations = callApi(bikeUrl, queryStation).Result;
+                List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(responseStations);
+                stations.AddRange(stationsOfContract);
             }
-
-            Console.WriteLine("Please choose a contract :");
-            string chosenContract = Console.ReadLine();
-
-            string queryStation = "stations?contract=" + chosenContract + "&apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
-            string responseStations = callApi(bikeUrl, queryStation).Result;
-
-            List<Station> stations = JsonSerializer.Deserialize<List<Station>>(responseStations);
 
             Console.WriteLine("Please enter an adress of origin :");
             string originAdress = Console.ReadLine();
 
             string encodedAdress = HttpUtility.UrlEncode(originAdress);
 
-            string positionAdress = callApi("https://nominatim.openstreetmap.org/", "search?q=" + encodedAdress + "&format=json&polygon=1&addressdetails=1").Result;
+            string queryOriginAddress = "geocode/search?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&text=" + encodedAdress;
+            string responseOriginAddress = callApi(openRouteUrl, queryOriginAddress).Result;
 
-            Console.WriteLine(positionAdress);
+            OpenRouteService geocodeOriginAddress = JsonSerializer.Deserialize<OpenRouteService>(responseOriginAddress);
+            double[] res = geocodeOriginAddress.features[0].geometry.coordinates;
+
+            Console.WriteLine(res[0]);
+            Console.WriteLine(res[1]);
 
             //GeoCoordinate myPos = new GeoCoordinate(myLatitude, myLongitude);
 
