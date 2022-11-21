@@ -243,3 +243,12 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+Routing Server/.vs/Routing Server/v17/.suo
+Routing Server/Routing Server/bin/Debug/Routing Server.exe
+Routing Server/Routing Server/bin/Debug/Routing Server.pdb
+Routing Server/Routing Server/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+Routing Server/Routing Server/obj/Debug/Routing Server.csproj.AssemblyReference.cache
+Routing Server/Routing Server/obj/Debug/Routing Server.csproj.CoreCompileInputs.cache
+Routing Server/Routing Server/obj/Debug/Routing Server.csproj.FileListAbsolute.txt
+Routing Server/Routing Server/obj/Debug/Routing Server.exe
+Routing Server/Routing Server/obj/Debug/Routing Server.pdb
