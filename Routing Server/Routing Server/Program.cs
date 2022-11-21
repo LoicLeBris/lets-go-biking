@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Device.Location;
 using System.Collections;
+using System.Web;
 
 namespace Routing_Server
 {
@@ -34,6 +35,11 @@ namespace Routing_Server
 
             string queryStation = "stations?contract=" + chosenContract + "&apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
             string responseStations = callApi(url, queryStation).Result;
+
+            string adress = "186 chemin des génissieux Saint-Ismier";
+
+            string encodedAdress = HttpUtility.UrlEncode(adress, );
+
 
             List<Station> stations = JsonSerializer.Deserialize<List<Station>>(responseStations);
 
