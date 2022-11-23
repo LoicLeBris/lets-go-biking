@@ -19,7 +19,6 @@ namespace Routing_Server
 
         static void Main(string[] args)
         {
-            string openRouteUrl = "https://api.openrouteservice.org/";
             string bikeUrl = "https://api.jcdecaux.com/vls/v3/";
             string query = "contracts?apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
             string response = callApi(bikeUrl, query).Result;
@@ -35,47 +34,16 @@ namespace Routing_Server
                 stations.AddRange(stationsOfContract);
             }
 
-            Console.WriteLine("Please enter an adress of origin :");
-            string originAdress = Console.ReadLine();
+            Distances distance = new Distances(stations);
+            Adresses adresses = new Adresses();
 
-            string encodedAdress = HttpUtility.UrlEncode(originAdress);
+            GeoCoordinate origin = adresses.askForOrigin();
 
-            string queryOriginAddress = "geocode/search?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&text=" + encodedAdress;
-            string responseOriginAddress = callApi(openRouteUrl, queryOriginAddress).Result;
+            Station departureStation = distance.getShortestDistanceToStation(origin);
 
-            OpenRouteService geocodeOriginAddress = JsonSerializer.Deserialize<OpenRouteService>(responseOriginAddress);
-            double[] res = geocodeOriginAddress.features[0].geometry.coordinates;
-
-            Console.WriteLine(res[0]);
-            Console.WriteLine(res[1]);
-
-            //GeoCoordinate myPos = new GeoCoordinate(myLatitude, myLongitude);
-
-
-            /*List<double> distances = new List<double>();
-            foreach (Station station in stations)
-            {
-                GeoCoordinate stationPos = new GeoCoordinate(station.position.latitude, station.position.longitude);
-                //double distance = stationPos.GetDistanceTo(myPos);
-                //distances.Add(distance);
-            }*/
-
-            /*double shortest_distance = distances.Min();
-            Console.WriteLine("Shortest distance " + shortest_distance);*/
-
-            /*int i;
-            for (i = 0; i < distances.Count; i++)
-            {
-                if (distances[i] == shortest_distance)
-                {
-                    break;
-                }
-            }*/
-
-            //Console.WriteLine("La station la plus proche est :" + stations[i].name);
+            Console.WriteLine("La station la plus proche est :" + departureStation.name);
 
             Console.ReadLine();
-
         }
 
         static async Task<string> callApi(string url, string query)
