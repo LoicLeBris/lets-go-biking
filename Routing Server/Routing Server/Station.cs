@@ -32,8 +32,7 @@ namespace Routing_Server
 
         public override string ToString()
         {
-            return "latitude : " + latitude + "\n"
-                + "longitude : " + longitude;
+            return longitude.ToString().Replace(',', '.')+ "," + latitude.ToString().Replace(',', '.');
         }
     }
 }

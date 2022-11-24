@@ -37,11 +37,27 @@ namespace Routing_Server
             Distances distance = new Distances(stations);
             Adresses adresses = new Adresses();
 
-            GeoCoordinate origin = adresses.askForOrigin();
+            Console.WriteLine("Please enter an adress of origin :");
+            GeoCoordinate origin = adresses.askForAdress();
+            Console.WriteLine("Please enter an adress of destination :");
+            GeoCoordinate destination = adresses.askForAdress();
 
             Station departureStation = distance.getShortestDistanceToStation(origin);
+            Station arrivalStation = distance.getShortestDistanceToStation(destination);
 
             Console.WriteLine("La station la plus proche est :" + departureStation.ToString());
+
+            Itineraire itineraire = new Itineraire(origin, destination, departureStation, arrivalStation);
+
+            itineraire.getItineraryToDepartureStation();
+
+            Console.WriteLine("Vous pouvez récupérer un vélo à la station. Il y a de la route jusqu'à la prochaine station : " + arrivalStation.ToString());
+
+            itineraire.getItineraryToArrivalStation();
+
+            Console.WriteLine("Laissez votre vélo ici et finissez le chemin à pied :");
+
+            itineraire.getItineraryToDestinationAdress();
 
             Console.ReadLine();
         }

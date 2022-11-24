@@ -55,7 +55,9 @@
   <ItemGroup>
     <Compile Include="Adresses.cs" />
     <Compile Include="Contracts.cs" />
+    <Compile Include="Directions.cs" />
     <Compile Include="Distances.cs" />
+    <Compile Include="Itineraire.cs" />
     <Compile Include="OpenRouteService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

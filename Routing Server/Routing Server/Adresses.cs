@@ -17,25 +17,24 @@ namespace Routing_Server
 
         public Adresses() { }
 
-        public GeoCoordinate askForOrigin()
+        public GeoCoordinate askForAdress()
         {
-            Console.WriteLine("Please enter an adress of origin :");
             string originAdress = Console.ReadLine();
 
             string encodedAdress = HttpUtility.UrlEncode(originAdress);
 
-            string queryOriginAddress = "geocode/search?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&text=" + encodedAdress;
-            string responseOriginAddress = callApi(openRouteUrl, queryOriginAddress).Result;
+            string queryAddress = "geocode/search?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&text=" + encodedAdress;
+            string responseAddress = callApi(openRouteUrl, queryAddress).Result;
 
-            OpenRouteService geocodeOriginAddress = JsonSerializer.Deserialize<OpenRouteService>(responseOriginAddress);
-            double[] res = geocodeOriginAddress.features[0].geometry.coordinates;
+            OpenRouteService geocodeAddress = JsonSerializer.Deserialize<OpenRouteService>(responseAddress);
+            double[] res = geocodeAddress.features[0].geometry.coordinates;
 
             double latitude = res[1];
             double longitude = res[0];
 
-            GeoCoordinate origin = new GeoCoordinate(latitude, longitude);
+            GeoCoordinate adress = new GeoCoordinate(latitude, longitude);
 
-            return origin;
+            return adress;
         }
 
         static async Task<string> callApi(string url, string query)
