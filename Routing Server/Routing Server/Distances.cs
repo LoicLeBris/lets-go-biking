@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Web.UI.WebControls;
 using Newtonsoft.Json.Linq;
+using System.Runtime.Remoting.Contexts;
+using System.Text.Json.Nodes;
+using System.Runtime.Remoting.Messaging;
 
 namespace Routing_Server
 {
@@ -23,28 +26,69 @@ namespace Routing_Server
             this.stations = stations;
         }
         
-        public Station getShortestDistanceToStation(GeoCoordinate origin)
+        public void getShortestDistanceToStation(double[] origin)
         {
-            List<double> distances = new List<double>();
+            string response = callMatrixEndpoint(origin, "foot-walking");
+
+            DurationMatrix durationMatrix = System.Text.Json.JsonSerializer.Deserialize<DurationMatrix>(response);
+            double[][] durations = durationMatrix.durations;
+
+            double[] dur = durations[0];
+
+            Console.WriteLine("Durations");
+            for(int i = 0; i < dur.Length; i++)
+            {
+                Console.WriteLine(dur[i]);
+            }
+        }
+
+        public string callMatrixEndpoint(double[] origin, string type)
+        {
+            string url = "https://api.openrouteservice.org/v2/matrix/";
+            client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2");
+
+            List<double[]> coordinates = new List<double[]>();
+            coordinates.Add(origin);
+
+            int i = 0;
             foreach (Station station in stations)
             {
-                GeoCoordinate stationPos = new GeoCoordinate(station.position.latitude, station.position.longitude);
-                double distance = stationPos.GetDistanceTo(origin);
-                distances.Add(distance);
+                i++;
+                double[] distance = new double[2];
+                distance[0] = station.position.longitude;
+                distance[1] = station.position.latitude;
+                coordinates.Add(distance);
+                if (i == 20) { break; }
             }
 
-            double shortest_distance = distances.Min();
+            var locations = new { locations = coordinates };
+            var output = JsonConvert.SerializeObject(locations);
 
-            int i;
-            for (i = 0; i < distances.Count; i++)
+            var locationsString = new StringContent(output, Encoding.UTF8, "application/json");
+
+            string response = callApi(url, type, locationsString).Result;
+          
+            return response;
+        }
+
+        static async Task<string> callApi(string url, string query, StringContent content)
+        {
+            // Call asynchronous network methods in a try/catch block to handle exceptions.
+            try
             {
-                if (distances[i] == shortest_distance)
-                {
-                    break;
-                }
+                HttpResponseMessage responseContractList = await client.PostAsync(url + query, content);
+                responseContractList.EnsureSuccessStatusCode();
+                string responseBody = await responseContractList.Content.ReadAsStringAsync();
+                // Above three lines can be replaced with new helper method below
+                // string responseBody = await client.GetStringAsync(uri);
+                return responseBody;
             }
-
-            return stations[i];
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
+                return e.Message;
+            }
         }
 
     }

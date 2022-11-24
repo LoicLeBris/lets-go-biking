@@ -37,11 +37,11 @@ namespace Routing_Server
             Distances distance = new Distances(stations);
             Adresses adresses = new Adresses();
 
-            GeoCoordinate origin = adresses.askForOrigin();
+            double[] origin = adresses.askForOrigin();
+            
+            distance.getShortestDistanceToStation(origin);
 
-            Station departureStation = distance.getShortestDistanceToStation(origin);
-
-            Console.WriteLine("La station la plus proche est :" + departureStation.ToString());
+            //Console.WriteLine("La station la plus proche est :" + departureStation.ToString());
 
             Console.ReadLine();
         }

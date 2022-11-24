@@ -17,7 +17,7 @@ namespace Routing_Server
 
         public Adresses() { }
 
-        public GeoCoordinate askForOrigin()
+        public double[] askForOrigin()
         {
             Console.WriteLine("Please enter an adress of origin :");
             string originAdress = Console.ReadLine();
@@ -30,12 +30,14 @@ namespace Routing_Server
             OpenRouteService geocodeOriginAddress = JsonSerializer.Deserialize<OpenRouteService>(responseOriginAddress);
             double[] res = geocodeOriginAddress.features[0].geometry.coordinates;
 
-            double latitude = res[1];
+            /*double latitude = res[1];
             double longitude = res[0];
 
-            GeoCoordinate origin = new GeoCoordinate(latitude, longitude);
+            double[] coordinates = new double[2];
+            coordinates[0] = latitude;
+            coordinates[1] = longitude;*/
 
-            return origin;
+            return res;
         }
 
         static async Task<string> callApi(string url, string query)
