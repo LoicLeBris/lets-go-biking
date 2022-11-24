@@ -41,7 +41,7 @@ namespace Routing_Server
 
             Station departureStation = distance.getShortestDistanceToStation(origin);
 
-            Console.WriteLine("La station la plus proche est :" + departureStation.name);
+            Console.WriteLine("La station la plus proche est :" + departureStation.ToString());
 
             Console.ReadLine();
         }

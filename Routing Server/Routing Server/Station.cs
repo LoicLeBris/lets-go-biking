@@ -13,7 +13,16 @@ namespace Routing_Server
         }
 
         public string name { get; set; }
+        public string contractName { get; set; }
+        public string address { get; set; }
         public Position position { get; set; }
+
+        public override string ToString()
+        {
+            return "name : " + name 
+                + "\naddress :" + address 
+                + "\ncontractName :" + contractName;
+        }
     }
 
     public class Position
