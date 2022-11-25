@@ -14,21 +14,21 @@ using Newtonsoft.Json.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Text.Json.Nodes;
 using System.Runtime.Remoting.Messaging;
+using static System.Collections.Specialized.BitVector32;
 
 namespace Routing_Server
 {
     public class Distances
     {
         private static readonly HttpClient client = new HttpClient();
-        private List<Station> stations;
         
-        public Distances(List<Station> stations) {
-            this.stations = stations;
+        public Distances() {
+          
         }
         
-        public void getShortestDistanceToStation(double[] origin)
+        public void getShortestDistance(List<double[]> coordinates)
         {
-            string response = callMatrixEndpoint(origin, "foot-walking");
+            string response = callMatrixEndpoint(coordinates, "foot-walking");
 
             DurationMatrix durationMatrix = System.Text.Json.JsonSerializer.Deserialize<DurationMatrix>(response);
             double[][] durations = durationMatrix.durations;
@@ -42,33 +42,31 @@ namespace Routing_Server
             }
         }
 
-        public string callMatrixEndpoint(double[] origin, string type)
+        public string callMatrixEndpoint(List<double[]> coordinates, string type)
         {
             string url = "https://api.openrouteservice.org/v2/matrix/";
             client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2");
 
-            List<double[]> coordinates = new List<double[]>();
-            coordinates.Add(origin);
-
-            int i = 0;
-            foreach (Station station in stations)
-            {
-                i++;
-                double[] distance = new double[2];
-                distance[0] = station.position.longitude;
-                distance[1] = station.position.latitude;
-                coordinates.Add(distance);
-                if (i == 20) { break; }
-            }
-
             var locations = new { locations = coordinates };
             var output = JsonConvert.SerializeObject(locations);
+
+            Console.WriteLine(output);
 
             var locationsString = new StringContent(output, Encoding.UTF8, "application/json");
 
             string response = callApi(url, type, locationsString).Result;
           
             return response;
+        }
+
+        public void getClosestCity(List<double[]> coordinates)
+        {
+            List<GeoCoordinate> geoCoordinates= new List<GeoCoordinate>();
+            foreach(double[] coordinatesItem in coordinates)
+            {
+                GeoCoordinate pos = new GeoCoordinate(coordinatesItem[1], coordinatesItem[0]);
+                geoCoordinates.Add(pos);
+            }
         }
 
         static async Task<string> callApi(string url, string query, StringContent content)

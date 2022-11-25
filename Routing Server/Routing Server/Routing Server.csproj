@@ -54,10 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adresses.cs" />
-    <Compile Include="Contracts.cs" />
+    <Compile Include="Contract.cs" />
     <Compile Include="Distances.cs" />
     <Compile Include="Durations.cs" />
-    <Compile Include="OpenRouteService.cs" />
+    <Compile Include="JCDecaux.cs" />
+    <Compile Include="GeoCode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Station.cs" />

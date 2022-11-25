@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Linq;
@@ -17,27 +18,20 @@ namespace Routing_Server
 
         public Adresses() { }
 
-        public double[] askForOrigin()
+        public double[] getAddressCoordinates(string address)
         {
-            Console.WriteLine("Please enter an adress of origin :");
-            string originAdress = Console.ReadLine();
+            string encodedAdress = HttpUtility.UrlEncode(address);
 
-            string encodedAdress = HttpUtility.UrlEncode(originAdress);
+            string queryAddress = "geocode/search?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&text=" + encodedAdress;
+            string responseAddress = callApi(openRouteUrl, queryAddress).Result;
 
-            string queryOriginAddress = "geocode/search?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&text=" + encodedAdress;
-            string responseOriginAddress = callApi(openRouteUrl, queryOriginAddress).Result;
-
-            OpenRouteService geocodeOriginAddress = JsonSerializer.Deserialize<OpenRouteService>(responseOriginAddress);
-            double[] res = geocodeOriginAddress.features[0].geometry.coordinates;
-
-            /*double latitude = res[1];
-            double longitude = res[0];
-
-            double[] coordinates = new double[2];
-            coordinates[0] = latitude;
-            coordinates[1] = longitude;*/
-
-            return res;
+            GeoCode geocodeAddress = JsonSerializer.Deserialize<GeoCode>(responseAddress);
+            if (geocodeAddress.features != null && geocodeAddress.features.Length != 0)
+            {
+                double[] res = geocodeAddress.features[0].geometry.coordinates;
+                return res;
+            }
+            return null;
         }
 
         static async Task<string> callApi(string url, string query)
