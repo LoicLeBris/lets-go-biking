@@ -12,7 +12,7 @@ namespace Routing_Server
 {
         public class DurationMatrix
         {
-            [JsonProperty("durations", NullValueHandling = NullValueHandling.Ignore)]
-            public double[][] durations { get; set; }
+            [JsonProperty("durations")]
+            public List<List<double?>> durations { get; set; }
         }
 }

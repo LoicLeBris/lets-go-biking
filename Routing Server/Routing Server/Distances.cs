@@ -4,17 +4,11 @@ using System.Device.Location;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http;
-using System.Web.UI.WebControls;
-using Newtonsoft.Json.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text.Json.Nodes;
-using System.Runtime.Remoting.Messaging;
-using static System.Collections.Specialized.BitVector32;
+using System.Xml;
+using System.Collections;
 
 namespace Routing_Server
 {
@@ -30,16 +24,38 @@ namespace Routing_Server
         {
             string response = callMatrixEndpoint(coordinates, "foot-walking");
 
-            DurationMatrix durationMatrix = System.Text.Json.JsonSerializer.Deserialize<DurationMatrix>(response);
-            double[][] durations = durationMatrix.durations;
-
-            double[] dur = durations[0];
-
-            Console.WriteLine("Durations");
-            for(int i = 0; i < dur.Length; i++)
+            var settings = new JsonSerializerSettings
             {
-                Console.WriteLine(dur[i]);
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+
+            DurationMatrix durationMatrix = JsonConvert.DeserializeObject<DurationMatrix>(response, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
+            List<List<double?>> durations = new List<List<double?>>();
+            durations = durationMatrix.durations;
+            
+            List<double?> dur = durations[0];
+            dur.RemoveAt(0);
+
+            Console.WriteLine("Durations :");
+
+            double? minima = 0;
+            int mindex = 0;
+
+            for (int i = 0; i < dur.Count; i++)
+            {
+                if (dur[i] < minima)
+                { 
+                    minima = dur[i]; 
+                    mindex = i; 
+                }
             }
+
+            Console.WriteLine(mindex);
         }
 
         public string callMatrixEndpoint(List<double[]> coordinates, string type)
@@ -59,15 +75,6 @@ namespace Routing_Server
             return response;
         }
 
-        public void getClosestCity(List<double[]> coordinates)
-        {
-            List<GeoCoordinate> geoCoordinates= new List<GeoCoordinate>();
-            foreach(double[] coordinatesItem in coordinates)
-            {
-                GeoCoordinate pos = new GeoCoordinate(coordinatesItem[1], coordinatesItem[0]);
-                geoCoordinates.Add(pos);
-            }
-        }
 
         static async Task<string> callApi(string url, string query, StringContent content)
         {

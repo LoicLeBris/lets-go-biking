@@ -13,6 +13,10 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
+    <PropertyGroup>
+	    <Nullable>enable</Nullable>
+	    <LangVersion>8.0</LangVersion>
+    </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -56,7 +60,7 @@
     <Compile Include="Adresses.cs" />
     <Compile Include="Contract.cs" />
     <Compile Include="Distances.cs" />
-    <Compile Include="Durations.cs" />
+    <Compile Include="DurationMatrix.cs" />
     <Compile Include="JCDecaux.cs" />
     <Compile Include="GeoCode.cs" />
     <Compile Include="Program.cs" />
