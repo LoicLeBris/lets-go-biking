@@ -21,7 +21,7 @@ namespace Routing_Server
             client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2");
         }
 
-        public int getShortestDistance(List<double[]> coordinates, double[] userInput)
+        public int getShortestDistance(List<double[]> coordinates, double[] userInput, string travelMethod)
         {
             List<List<double>> durations = new List<List<double>>();
             List<double> dur = new List<double>();
@@ -31,7 +31,7 @@ namespace Routing_Server
             foreach(var chunked in chunkedStations)
             {
                 chunked.Insert(0, userInput);
-                Task<string> result = callMatrixEndpoint(chunked, "foot-walking");
+                Task<string> result = callMatrixEndpoint(chunked, travelMethod);
                 tasks.Add(result);
             }
 

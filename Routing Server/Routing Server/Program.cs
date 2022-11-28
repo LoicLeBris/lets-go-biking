@@ -1,14 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Device.Location;
-using System.Collections;
-using System.Web;
-using System.Security.Policy;
-using System.Diagnostics.Contracts;
 
 namespace Routing_Server
 {
@@ -29,18 +20,34 @@ namespace Routing_Server
             string origin = Console.ReadLine();
             double[] originCoordinates = adresses.getAddressCoordinates(origin);
 
-            int contractNumber = distance.findClosestContract(coordinates, originCoordinates);
+            Console.WriteLine("Please enter an destination address :");
+            string destination = Console.ReadLine();
+            double[] destinationCoordinates = adresses.getAddressCoordinates(destination);
+
+            int contractNumberOrigin = distance.findClosestContract(coordinates, originCoordinates);
+            Console.WriteLine("Origin contract :");
+            Console.WriteLine(contracts[contractNumberOrigin].ToString());
+
+            int contractNumberDest = distance.findClosestContract(coordinates, destinationCoordinates);
+            Console.WriteLine("Destination contract :");
+            Console.WriteLine(contracts[contractNumberDest].ToString());
+
+            List<Station> stationsOrigin = jcd.loadStations(contracts[contractNumberOrigin]);
+            List<double[]> stationsCoordinates = jcd.getCoordinatesForEachStation(true, stationsOrigin);
+            int stationIndex = distance.getShortestDistance(stationsCoordinates, originCoordinates, "foot-walking");
+            Console.WriteLine("Origin Station:");
+            Console.WriteLine(stationsOrigin[stationIndex]);
+
+            List<Station> stationsDest = stationsOrigin;
+            if (!contracts[contractNumberOrigin].Equals(contracts[contractNumberDest]))
+            {
+                stationsDest = jcd.loadStations(contracts[contractNumberDest]);
+                stationsCoordinates = jcd.getCoordinatesForEachStation(true, stationsOrigin);
+            }
             
-            Console.WriteLine("Closest contract :");
-            Console.WriteLine(contracts[contractNumber].ToString());
-
-            List<Station> stations = jcd.loadStations(contracts[contractNumber]);
-
-            List<double[]> stationsCoordinates = jcd.getCoordinatesForEachStation(true, stations);
-
-            int stationIndex = distance.getShortestDistance(stationsCoordinates, originCoordinates);
-
-            Console.WriteLine(stations[stationIndex]);
+            int stationIndexDest = distance.getShortestDistance(stationsCoordinates, destinationCoordinates, "foot-walking");
+            Console.WriteLine("Destination Station:");
+            Console.WriteLine(stationsDest[stationIndexDest]);
 
             Console.ReadLine();
         }
