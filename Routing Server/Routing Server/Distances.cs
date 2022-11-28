@@ -27,10 +27,18 @@ namespace Routing_Server
             List<double> dur = new List<double>();
             List<List<double[]>> chunkedStations = ChunkBy(coordinates, 30);
 
-            foreach (var chunked in chunkedStations)
+            List<Task<string>> tasks = new List<Task<string>>();
+            foreach(var chunked in chunkedStations)
             {
                 chunked.Insert(0, userInput);
-                string response = callMatrixEndpoint(chunked, "foot-walking");
+                Task<string> result = callMatrixEndpoint(chunked, "foot-walking");
+                tasks.Add(result);
+            }
+
+            foreach (var task in tasks)
+            {
+                task.Wait();
+                string response = task.Result;
                 string validString = response.Replace("null", "9.999");
                 DurationMatrix durationMatrix = JsonConvert.DeserializeObject<DurationMatrix>(validString);
                 durations = durationMatrix.durations;
@@ -94,7 +102,7 @@ namespace Routing_Server
         }
 
 
-        public string callMatrixEndpoint(List<double[]> coordinates, string type)
+        public Task<string> callMatrixEndpoint(List<double[]> coordinates, string type)
         {
             string url = "https://api.openrouteservice.org/v2/matrix/";
 
@@ -105,7 +113,7 @@ namespace Routing_Server
 
             var locationsString = new StringContent(output, Encoding.UTF8, "application/json");
 
-            string response = callApi(url, type, locationsString).Result;
+            Task<string> response = callApi(url, type, locationsString);
           
             return response;
         }
