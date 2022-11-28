@@ -46,11 +46,6 @@ namespace Routing_Server
                 dur.AddRange(durations[0]);
             }
 
-            foreach(var item in dur)
-            {
-                Console.WriteLine(item);
-            }
-            
             int minIndex = -1;
             double minValue = dur.Max();
             
@@ -108,8 +103,6 @@ namespace Routing_Server
 
             var locations = new { locations = coordinates };
             var output = JsonConvert.SerializeObject(locations);
-
-            Console.WriteLine(output);
 
             var locationsString = new StringContent(output, Encoding.UTF8, "application/json");
 

@@ -14,13 +14,10 @@ namespace Routing_Server
     {
         static readonly HttpClient client = new HttpClient();
         string apiUrl = "https://api.jcdecaux.com/vls/v3/";
-        List<Contract> contracts;
-        List<Station> stations;
 
         public JCDecaux()
         {
-            contracts = new List<Contract>();
-            stations = new List<Station>();
+            
         }
 
         public List<Contract> loadContracts()
@@ -31,9 +28,28 @@ namespace Routing_Server
             return contracts;
         }
 
+        public List<double[]> getCoordinatesForEachContract(Adresses adresses, List<Contract> contracts)
+        {
+            List<double[]> coordinates = new List<double[]>();
+
+            foreach (Contract contract in contracts)
+            {
+                if (contract.name != null)
+                {
+                    double[] cityCoordinates = adresses.getAddressCoordinates(contract.name);
+                    if (cityCoordinates != null)
+                    {
+                        coordinates.Add(cityCoordinates);
+                    }
+                }
+            }
+
+            return coordinates;
+        }
+
         public List<Station> loadStations(Contract contract)
         {
-            stations = new List<Station>();
+            List<Station> stations = new List<Station>();
             string queryStation = "stations?contract=" + contract.name + "&apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
             string responseStations = callApi(apiUrl, queryStation).Result;
             List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(responseStations);
@@ -41,10 +57,36 @@ namespace Routing_Server
             return stations;
         }
 
-        
+        public List<double[]> getCoordinatesForEachStation(bool isPickingUpABike, List<Station> stations)
+        {
+            List<double[]> stationsCoordinates = new List<double[]>();
 
-
-        static async Task<string> callApi(string url, string query)
+            if (isPickingUpABike)
+            {
+                foreach (Station station in stations)
+                {
+                    if (station.totalStands.availabilities.bikes > 0)
+                    {
+                        double[] stationCoordinates = { station.position.longitude, station.position.latitude };
+                        stationsCoordinates.Add(stationCoordinates);
+                    }
+                }
+            }
+            else
+            {
+                foreach (Station station in stations)
+                {
+                    if (station.totalStands.availabilities.stands > 0)
+                    {
+                        double[] stationCoordinates = { station.position.longitude, station.position.latitude };
+                        stationsCoordinates.Add(stationCoordinates);
+                    }
+                }
+            }
+           
+            return stationsCoordinates;
+        }
+            static async Task<string> callApi(string url, string query)
         {
             try
             {

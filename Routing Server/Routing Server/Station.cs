@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,12 +18,28 @@ namespace Routing_Server
         public string address { get; set; }
         public Position position { get; set; }
 
+        public Stands totalStands { get; set; }
+
         public override string ToString()
         {
             return "name : " + name 
                 + "\naddress :" + address 
                 + "\ncontractName :" + contractName;
         }
+    }
+
+    public partial class Stands
+    {
+        public Availabilities availabilities { get; set; }
+
+        public long capacity { get; set; }
+    }
+
+    public partial class Availabilities
+    {
+        public long bikes { get; set; }
+
+        public long stands { get; set; }
     }
 
     public class Position
