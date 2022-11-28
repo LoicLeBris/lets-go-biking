@@ -14,7 +14,6 @@ namespace Routing_Server
 {
     internal class Program
     {
-        // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
 
         static void Main(string[] args)
         {
@@ -28,8 +27,7 @@ namespace Routing_Server
             Console.WriteLine("Please enter a departure address :");
             string origin = Console.ReadLine();
             double[] originCoordinates = adresses.getAddressCoordinates(origin);
-            coordinates.Add(originCoordinates);
-
+            
             foreach (Contract contract in contracts)
             {
                 if(contract.name != null)
@@ -37,26 +35,36 @@ namespace Routing_Server
                     double[] cityCoordinates = adresses.getAddressCoordinates(contract.name);
                     if (cityCoordinates != null)
                     {
-                        Console.WriteLine(contract.name);
                         coordinates.Add(cityCoordinates);
                     }
                 }
             }
 
             Distances distance = new Distances();
-            int contractNumber = distance.getShortestDistance(coordinates);
+            int contractNumber = distance.findClosestContract(coordinates, originCoordinates);
+            
+            Console.WriteLine("Contrat le plus proche :");
             Console.WriteLine(contracts[contractNumber].ToString());
 
-            /*
-            double[] origin = adresses.askForOrigin();
-            
-            distance.getShortestDistanceToStation(origin);*/
+            List<Station> stations = jcd.loadStations(contracts[contractNumber]);
 
-            //Console.WriteLine("La station la plus proche est :" + departureStation.ToString());
+            List<double[]> stationsCoordinates = new List<double[]>();
+            foreach(Station station in stations) {
+                double[] stationCoordinates = {station.position.longitude, station.position.latitude};
+                stationsCoordinates.Add(stationCoordinates);
+            }
+
+
+            int stationIndex = distance.getShortestDistance(stationsCoordinates, originCoordinates);
+
+
+            Console.WriteLine(stations[stationIndex]);
 
             Console.ReadLine();
         }
 
         
+
+
     }
 }

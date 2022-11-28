@@ -34,7 +34,7 @@ namespace Routing_Server
         public List<Station> loadStations(Contract contract)
         {
             stations = new List<Station>();
-            string queryStation = "stations?contract=" + contract + "&apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
+            string queryStation = "stations?contract=" + contract.name + "&apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
             string responseStations = callApi(apiUrl, queryStation).Result;
             List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(responseStations);
             stations.AddRange(stationsOfContract);
