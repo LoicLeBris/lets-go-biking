@@ -43,10 +43,9 @@ namespace Routing_Server
                 }
             }
 
-
-
             Distances distance = new Distances();
-            distance.getShortestDistance(coordinates);
+            int contractNumber = distance.getShortestDistance(coordinates);
+            Console.WriteLine(contracts[contractNumber].ToString());
 
             /*
             double[] origin = adresses.askForOrigin();

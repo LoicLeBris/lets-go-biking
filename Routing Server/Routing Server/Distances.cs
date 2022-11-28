@@ -20,42 +20,41 @@ namespace Routing_Server
           
         }
         
-        public void getShortestDistance(List<double[]> coordinates)
+        public int getShortestDistance(List<double[]> coordinates)
         {
             string response = callMatrixEndpoint(coordinates, "foot-walking");
+            string validString = response.Replace("null", "9.999");
 
-            var settings = new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore
-            };
+            DurationMatrix durationMatrix = JsonConvert.DeserializeObject<DurationMatrix>(validString);
 
-            DurationMatrix durationMatrix = JsonConvert.DeserializeObject<DurationMatrix>(response, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
-
-            List<List<double?>> durations = new List<List<double?>>();
+            List<List<double>> durations = new List<List<double>>();
             durations = durationMatrix.durations;
             
-            List<double?> dur = durations[0];
+            List<double> dur = durations[0];
             dur.RemoveAt(0);
 
-            Console.WriteLine("Durations :");
-
-            double? minima = 0;
-            int mindex = 0;
-
-            for (int i = 0; i < dur.Count; i++)
+            int minIndex = -1;
+            double minValue = 0.0;
+            
+            for(int i = 0; i < dur.Count; i++)
             {
-                if (dur[i] < minima)
-                { 
-                    minima = dur[i]; 
-                    mindex = i; 
+                if (dur[i] != 9.999)
+                {
+                    if (dur[i] <= minValue)
+                    {
+                        minValue = dur[i];
+                        minIndex= i;
+                    }
                 }
             }
 
-            Console.WriteLine(mindex);
+            if(minIndex == -1)
+            {
+                Console.WriteLine("Désolé, nous n'avons pas trouvé de stations suffisament proche de vous pour y aller à pied");
+                Console.ReadLine();
+            }
+
+            return minIndex+1;
         }
 
         public string callMatrixEndpoint(List<double[]> coordinates, string type)
