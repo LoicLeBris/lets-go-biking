@@ -9,32 +9,18 @@ using System.Device.Location;
 using System.Collections;
 using System.Web;
 using System.Security.Policy;
+using SOAPServer.ServiceReference1;
 
 namespace SOAPServer
 {
     internal class Program
     {
-        // HttpClient is intended to be instantiated once per application, rather than per-use. See Remarks.
-        static readonly HttpClient client = new HttpClient();
+        static readonly Service1Client proxyCache = new Service1Client();
 
         public string method(string o, string d)
         {
-            string bikeUrl = "https://api.jcdecaux.com/vls/v3/";
-            string query = "contracts?apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
-            string response = callApi(bikeUrl, query).Result;
-
-            List<Steps> steps = new List<Steps>();
-            List<string> instructions = new List<string>();
-            List<Contracts> contracts = JsonSerializer.Deserialize<List<Contracts>>(response);
-            List<Station> stations = new List<Station>();
-
-            foreach (Contracts contract in contracts)
-            {
-                string queryStation = "stations?contract=" + contract + "&apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
-                string responseStations = callApi(bikeUrl, queryStation).Result;
-                List<Station> stationsOfContract = JsonSerializer.Deserialize<List<Station>>(responseStations);
-                stations.AddRange(stationsOfContract);
-            }
+            List<Contracts> contracts = JsonSerializer.Deserialize<List<Contracts>>(proxyCache.getContracts());
+            List<Station> stations = JsonSerializer.Deserialize<List<Station>>(proxyCache.getStations());
 
             Distances distance = new Distances(stations);
             Adresses adresses = new Adresses();
@@ -46,6 +32,8 @@ namespace SOAPServer
 
             Station departureStation = distance.getShortestDistanceToStation(origin);
             Station arrivalStation = distance.getShortestDistanceToStation(destination);
+
+            List<string> instructions = new List<string>();
 
             instructions.Add("La station la plus proche est :" + departureStation.ToString());
 
@@ -69,26 +57,6 @@ namespace SOAPServer
             foreach(Steps step in steps)
             {
                 instructions.Add(step.instruction + " on " + step.distance + "m");
-            }
-        }
-
-        static async Task<string> callApi(string url, string query)
-        {
-            // Call asynchronous network methods in a try/catch block to handle exceptions.
-            try
-            {
-                HttpResponseMessage responseContractList = await client.GetAsync(url + query);
-                responseContractList.EnsureSuccessStatusCode();
-                string responseBody = await responseContractList.Content.ReadAsStringAsync();
-                // Above three lines can be replaced with new helper method below
-                // string responseBody = await client.GetStringAsync(uri);
-                return responseBody;
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
-                return e.Message;
             }
         }
     }

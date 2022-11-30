@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://tempuri.org/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" name="Service1" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/ProxyCache/Service1/?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:8733/Design_Time_Addresses/ProxyCache/Service1/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IService1_getContracts_InputMessage">
+    <wsdl:part name="parameters" element="tns:getContracts" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getContracts_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getContractsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getStations_InputMessage">
+    <wsdl:part name="parameters" element="tns:getStations" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getStations_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getStationsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getStationsByContractName_InputMessage">
+    <wsdl:part name="parameters" element="tns:getStationsByContractName" />
+  </wsdl:message>
+  <wsdl:message name="IService1_getStationsByContractName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getStationsByContractNameResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IService1">
+    <wsdl:operation name="getContracts">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getContracts" message="tns:IService1_getContracts_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getContractsResponse" message="tns:IService1_getContracts_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getStations">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getStations" message="tns:IService1_getStations_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getStationsResponse" message="tns:IService1_getStations_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getStationsByContractName">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/getStationsByContractName" message="tns:IService1_getStationsByContractName_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/getStationsByContractNameResponse" message="tns:IService1_getStationsByContractName_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IService1" type="tns:IService1">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="getContracts">
+      <soap:operation soapAction="http://tempuri.org/IService1/getContracts" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getStations">
+      <soap:operation soapAction="http://tempuri.org/IService1/getStations" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getStationsByContractName">
+      <soap:operation soapAction="http://tempuri.org/IService1/getStationsByContractName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service1">
+    <wsdl:port name="BasicHttpBinding_IService1" binding="tns:BasicHttpBinding_IService1">
+      <soap:address location="http://localhost:8733/Design_Time_Addresses/ProxyCache/Service1/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

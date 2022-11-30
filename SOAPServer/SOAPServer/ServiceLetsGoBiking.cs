@@ -14,8 +14,6 @@ namespace SOAPServer
         public string GetItinerary(string a, string b)
         {
             Program program = new Program();
-            /*Steps[] response = program.method(a, b);
-            string str = JsonSerializer.Serialize(response);*/
             return program.method(a, b);
         }
     }

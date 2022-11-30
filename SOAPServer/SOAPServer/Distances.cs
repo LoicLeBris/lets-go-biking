@@ -14,7 +14,6 @@ namespace SOAPServer
 {
     public class Distances
     {
-        private static readonly HttpClient client = new HttpClient();
         private List<Station> stations;
         
         public Distances(List<Station> stations) {
