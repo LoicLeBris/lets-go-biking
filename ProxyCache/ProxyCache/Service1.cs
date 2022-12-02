@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace ProxyCache
@@ -31,8 +33,19 @@ namespace ProxyCache
 
         public string getStationsByContractName(string contractName)
         {
-            string queryStation = "stations?contract=" + contractName + "&apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
-            return callApi(JCDecauxItem.apiUrl+queryStation).Result;
+            JCDecauxItem item = proxyCache.Get<JCDecauxItem>("JCDecauxItem");
+            string stationsJson = item.getStations();
+            JsonArray stations = JsonSerializer.Deserialize<JsonArray>(stationsJson);
+            List<JsonObject> res = new List<JsonObject>();
+            for (int i=0; i<stations.Count; i++)
+            {
+                if (stations[i]["contractName"].ToString().Equals(contractName))
+                {
+                    res.Add((JsonObject)stations[i]);
+                }
+            }
+
+            return JsonSerializer.Serialize(res);
         }
 
         static public async Task<string> callApi(string url)
