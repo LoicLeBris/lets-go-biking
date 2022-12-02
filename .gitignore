@@ -252,3 +252,10 @@ Routing Server/Routing Server/obj/Debug/Routing Server.csproj.CoreCompileInputs.
 Routing Server/Routing Server/obj/Debug/Routing Server.csproj.FileListAbsolute.txt
 Routing Server/Routing Server/obj/Debug/Routing Server.exe
 Routing Server/Routing Server/obj/Debug/Routing Server.pdb
+HeavyClient/lib/javax.ejb.jar
+HeavyClient/lib/javax.jms.jar
+HeavyClient/lib/javax.resource.jar
+HeavyClient/lib/javax.servlet.jar
+HeavyClient/lib/javax.servlet.jsp.jar
+HeavyClient/lib/javax.servlet.jsp.jstl.jar
+HeavyClient/lib/javax.transaction.jar
