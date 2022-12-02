@@ -30,7 +30,7 @@ namespace Routing_Server
             List<Station> stationsOrigin = JsonSerializer.Deserialize<List<Station>>(proxyCache.getStationsByContractName(contracts[contractNumberOrigin].name));
             List<double[]> stationsCoordinates = getCoordinatesForEachStation(true, stationsOrigin);
             int stationIndex = distance.getShortestDistance(stationsCoordinates, originCoordinates, "foot-walking");
-            instructions.Add("Origin Station:" + stationsOrigin[stationIndex]);            
+            instructions.Add("Origin Station:" + stationsOrigin[stationIndex]);
 
             List<Station> stationsDest = stationsOrigin;
             if (!contracts[contractNumberOrigin].Equals(contracts[contractNumberDest]))

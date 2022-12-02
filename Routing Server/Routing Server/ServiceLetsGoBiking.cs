@@ -8,9 +8,9 @@ namespace Routing_Server
 {
     public class ServiceLetsGoBiking : IServiceLetsGoBiking
     {
+        Execution execution = new Execution();
         public string GetItinerary(string a, string b)
         {
-            Execution execution = new Execution();
             return execution.method(a, b);
         }
     }
