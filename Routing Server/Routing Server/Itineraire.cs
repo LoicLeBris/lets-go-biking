@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Device.Location;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -11,12 +14,12 @@ namespace Routing_Server
         static readonly HttpClient client = new HttpClient();
         string openRouteUrl = "https://api.openrouteservice.org/";
 
-        private GeoCoordinate origin;
-        private GeoCoordinate destination;
+        private string origin;
+        private string destination;
         private Station departureStation;
         private Station arrivalStation;
 
-        public Itineraire(GeoCoordinate origin, GeoCoordinate destination, Station departureStation, Station arrivalStation)
+        public Itineraire(string origin, string destination, Station departureStation, Station arrivalStation)
         {
             this.origin = origin;
             this.destination = destination;
@@ -24,24 +27,19 @@ namespace Routing_Server
             this.arrivalStation = arrivalStation;
         }
 
-        public void getItineraryToDepartureStation()
-        {
-            string originPosition = origin.Longitude.ToString().Replace(',', '.') + "," + origin.Latitude.ToString().Replace(',', '.');
-            string queryItinerary = "v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start="+originPosition+ "&end=" + departureStation.position.ToString();
-
+        public Steps[] getItineraryToDepartureStation()
+        { 
+            string queryItinerary = "v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + origin + "&end=" + departureStation.position.ToString();
+            Console.WriteLine(origin);
             string responseAddress = callApi(openRouteUrl, queryItinerary).Result;
 
             Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);
             Steps[] steps = directions.features[0].properties.segments[0].steps;
-            
-            foreach (Steps step in steps)
-            {
-                Console.WriteLine(step.instruction + " on " + step.distance +  "m. Then press enter.");
-                Console.ReadLine();
-            }
+
+            return steps;
         }
 
-        public void getItineraryToArrivalStation()
+        public Steps[] getItineraryToArrivalStation()
         {
             string queryItinerary = "v2/directions/cycling-regular?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + departureStation.position.ToString() + "&end=" + arrivalStation.position.ToString();
 
@@ -50,28 +48,19 @@ namespace Routing_Server
             Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);
             Steps[] steps = directions.features[0].properties.segments[0].steps;
 
-            foreach (Steps step in steps)
-            {
-                Console.WriteLine(step.instruction + " on " + step.distance + "m. Then press enter.");
-                Console.ReadLine();
-            }
+            return steps;
         }
 
-        public void getItineraryToDestinationAdress()
-        {
-            string destinationPosition = destination.Longitude.ToString().Replace(',', '.') + "," + destination.Latitude.ToString().Replace(',', '.');
-            string queryItinerary = "v2/directions/cycling-regular?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + arrivalStation.position.ToString() + "&end=" + destinationPosition;
+        public Steps[] getItineraryToDestinationAdress()
+        {           
+            string queryItinerary = "v2/directions/cycling-regular?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + arrivalStation.position.ToString() + "&end=" + destination;
 
             string responseAddress = callApi(openRouteUrl, queryItinerary).Result;
 
             Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);
             Steps[] steps = directions.features[0].properties.segments[0].steps;
 
-            foreach (Steps step in steps)
-            {
-                Console.WriteLine(step.instruction + " on " + step.distance + "m. Then press enter.");
-                Console.ReadLine();
-            }
+            return steps;
         }
 
         static async Task<string> callApi(string url, string query)

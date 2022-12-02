@@ -31,5 +31,10 @@ namespace ProxyCache
         {
             return stationsJson;
         }
+
+        public override string ToString()
+        {
+            return "JCDecauxItem";
+        }
     }
 }

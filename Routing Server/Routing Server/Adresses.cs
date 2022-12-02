@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Linq;
@@ -17,24 +18,20 @@ namespace Routing_Server
 
         public Adresses() { }
 
-        public GeoCoordinate askForAdress()
+        public double[] getAddressCoordinates(string address)
         {
-            string originAdress = Console.ReadLine();
-
-            string encodedAdress = HttpUtility.UrlEncode(originAdress);
+            string encodedAdress = HttpUtility.UrlEncode(address);
 
             string queryAddress = "geocode/search?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&text=" + encodedAdress;
             string responseAddress = callApi(openRouteUrl, queryAddress).Result;
 
-            OpenRouteService geocodeAddress = JsonSerializer.Deserialize<OpenRouteService>(responseAddress);
-            double[] res = geocodeAddress.features[0].geometry.coordinates;
-
-            double latitude = res[1];
-            double longitude = res[0];
-
-            GeoCoordinate adress = new GeoCoordinate(latitude, longitude);
-
-            return adress;
+            GeoCode geocodeAddress = JsonSerializer.Deserialize<GeoCode>(responseAddress);
+            if (geocodeAddress.features != null && geocodeAddress.features.Length != 0)
+            {
+                double[] res = geocodeAddress.features[0].geometry.coordinates;
+                return res;
+            }
+            return null;
         }
 
         static async Task<string> callApi(string url, string query)

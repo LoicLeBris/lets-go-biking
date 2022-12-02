@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SOAPServer.ServiceReference1 {
+namespace Routing_Server.ServiceReference1 {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -35,12 +35,12 @@ namespace SOAPServer.ServiceReference1 {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IService1Channel : SOAPServer.ServiceReference1.IService1, System.ServiceModel.IClientChannel {
+    public interface IService1Channel : Routing_Server.ServiceReference1.IService1, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class Service1Client : System.ServiceModel.ClientBase<SOAPServer.ServiceReference1.IService1>, SOAPServer.ServiceReference1.IService1 {
+    public partial class Service1Client : System.ServiceModel.ClientBase<Routing_Server.ServiceReference1.IService1>, Routing_Server.ServiceReference1.IService1 {
         
         public Service1Client() {
         }

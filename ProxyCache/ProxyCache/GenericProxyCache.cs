@@ -15,11 +15,14 @@ namespace ProxyCache
             T fileContents = cache[CacheItemName] as T;
 
             if (fileContents == null)
-            {
+            {             
                 T objet = (T)Activator.CreateInstance(typeof(T));
                 cache.Set(CacheItemName, objet, new CacheItemPolicy());
+                Console.WriteLine(objet + " a été enregistré dans le cache");
                 return objet;
             }
+
+            Console.WriteLine(fileContents + " a été récupéré depuis le cache");
 
             return fileContents;
         }

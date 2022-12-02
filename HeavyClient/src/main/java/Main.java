@@ -1,4 +1,5 @@
 import com.client.IServiceLetsGoBiking;
+import com.client.ObjectFactory;
 import com.client.ServiceLetsGoBiking;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
