@@ -48,12 +48,18 @@ namespace ProxyCache
         }
 
         public bool isABikeAvailableInStation(string station)
-        {;
-            Console.WriteLine("Passe par là");
+        {           
             JsonObject stationJson = JsonSerializer.Deserialize<JsonObject>(station);
             string stationUpdatedJson = callApi(JCDecauxItem.apiUrl + "stations/" + stationJson["number"].ToString() + "?contract=" + stationJson["contractName"].ToString() + "&" + JCDecauxItem.apiKey).Result;
             JsonObject stationUpdated = JsonSerializer.Deserialize<JsonObject>(stationUpdatedJson);
             return Int32.Parse(stationUpdated["totalStands"]["availabilities"]["bikes"].ToString()) > 0;
+        }
+        public bool isAStandAvailableInStation(string station)
+        {                        
+            JsonObject stationJson = JsonSerializer.Deserialize<JsonObject>(station);
+            string stationUpdatedJson = callApi(JCDecauxItem.apiUrl + "stations/" + stationJson["number"].ToString() + "?contract=" + stationJson["contractName"].ToString() + "&" + JCDecauxItem.apiKey).Result;
+            JsonObject stationUpdated = JsonSerializer.Deserialize<JsonObject>(stationUpdatedJson);
+            return Int32.Parse(stationUpdated["totalStands"]["availabilities"]["stands"].ToString()) > 0;
         }
 
         static public async Task<string> callApi(string url)

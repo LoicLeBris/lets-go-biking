@@ -34,13 +34,10 @@ namespace Routing_Server
 
             List<double> durationsByStation = distance.getListOfDurationsPerStation(stationsCoordinates, originCoordinates, "foot-walking");
             int indexOrigin = durationsByStation.IndexOf(durationsByStation.Min());
-            Console.WriteLine(durationsByStation.Min());
-            Console.WriteLine(proxyCache.isABikeAvailableInStation(JsonSerializer.Serialize(stationsOrigin[indexOrigin])));
 
             while (proxyCache.isABikeAvailableInStation(JsonSerializer.Serialize(stationsOrigin[indexOrigin])) == false)
             {
-                durationsByStation[indexOrigin] = durationsByStation.Max();
-                Console.WriteLine(durationsByStation.Min());
+                durationsByStation[indexOrigin] = durationsByStation.Max();                
                 indexOrigin = durationsByStation.IndexOf(durationsByStation.Min());
             }
 
@@ -56,7 +53,7 @@ namespace Routing_Server
             durationsByStation = distance.getListOfDurationsPerStation(stationsCoordinates, destinationCoordinates, "foot-walking");
             int indexDest = durationsByStation.IndexOf(durationsByStation.Min());
 
-            while (proxyCache.isABikeAvailableInStation(JsonSerializer.Serialize(stationsDest[indexDest])) == false)
+            while (proxyCache.isAStandAvailableInStation(JsonSerializer.Serialize(stationsDest[indexDest])) == false)
             {
                 durationsByStation[indexDest] = durationsByStation.Max();
                 indexDest = durationsByStation.IndexOf(durationsByStation.Min());

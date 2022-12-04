@@ -38,6 +38,12 @@ namespace Routing_Server.ServiceReference1 {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/isABikeAvailableInStation", ReplyAction="http://tempuri.org/IService1/isABikeAvailableInStationResponse")]
         System.Threading.Tasks.Task<bool> isABikeAvailableInStationAsync(string station);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/isAStandAvailableInStation", ReplyAction="http://tempuri.org/IService1/isAStandAvailableInStationResponse")]
+        bool isAStandAvailableInStation(string station);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService1/isAStandAvailableInStation", ReplyAction="http://tempuri.org/IService1/isAStandAvailableInStationResponse")]
+        System.Threading.Tasks.Task<bool> isAStandAvailableInStationAsync(string station);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -97,6 +103,14 @@ namespace Routing_Server.ServiceReference1 {
         
         public System.Threading.Tasks.Task<bool> isABikeAvailableInStationAsync(string station) {
             return base.Channel.isABikeAvailableInStationAsync(station);
+        }
+        
+        public bool isAStandAvailableInStation(string station) {
+            return base.Channel.isAStandAvailableInStation(station);
+        }
+        
+        public System.Threading.Tasks.Task<bool> isAStandAvailableInStationAsync(string station) {
+            return base.Channel.isAStandAvailableInStationAsync(station);
         }
     }
 }

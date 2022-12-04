@@ -29,8 +29,7 @@ namespace Routing_Server
 
         public Steps[] getItineraryToDepartureStation()
         { 
-            string queryItinerary = "v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + origin + "&end=" + departureStation.position.ToString();
-            Console.WriteLine(origin);
+            string queryItinerary = "v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + origin + "&end=" + departureStation.position.ToString();            
             string responseAddress = callApi(openRouteUrl, queryItinerary).Result;
 
             Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);
