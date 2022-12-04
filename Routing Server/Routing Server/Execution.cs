@@ -81,9 +81,10 @@ namespace Routing_Server
 
             addInstructions(instructions, itineraire.getItineraryToDestinationAdress());
 
+            ActiveMq activemq = new ActiveMq();
+            activemq.lauchActiveMq(instructions);
+
             return JsonSerializer.Serialize(instructions);
-
-
         }
 
         public List<double[]> getCoordinatesForEachContract(Adresses adresses, List<Contract> contracts)
