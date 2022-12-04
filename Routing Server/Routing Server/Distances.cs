@@ -23,48 +23,7 @@ namespace Routing_Server
                 client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf6248068382780acc46bc940a29b5ce9e693f");
             }                       
         }
-
-        public int getShortestDistance(List<double[]> coordinates, double[] userInput, string travelMethod)
-        {
-            List<List<double>> durations = new List<List<double>>();            
-            List<List<double[]>> chunkedStations = ChunkBy(coordinates, 30);
-            List<double> dur = new List<double>();
-            List<Task<string>> tasks = new List<Task<string>>();
-            foreach(var chunked in chunkedStations)
-            {
-                chunked.Insert(0, userInput);
-                Task<string> result = callMatrixEndpoint(chunked, travelMethod);
-                tasks.Add(result);
-            }
-
-            foreach (var task in tasks)
-            {
-                task.Wait();
-                string response = task.Result;
-                string validString = response.Replace("null", "9.999");
-                DurationMatrix durationMatrix = JsonConvert.DeserializeObject<DurationMatrix>(validString);
-                durations = durationMatrix.durations;
-                durations[0].RemoveAt(0);
-                dur.AddRange(durations[0]);
-            }
-
-            int minIndex = -1;
-            double minValue = dur.Min();
-            if(minValue != null)
-            {
-                minIndex = dur.IndexOf(minValue);
-            }         
-
-            if(minIndex == -1)
-            {
-                Console.WriteLine("Désolé, nous n'avons pas trouvé de stations suffisament proche de vous pour y aller à pied");
-                Console.ReadLine();
-            }
-           
-
-            return minIndex;
-        }
-
+       
         public List<double> getListOfDurationsPerStation(List<double[]> coordinates, double[] userInput, string travelMethod)
         {
             List<List<double>> durations = new List<List<double>>();
