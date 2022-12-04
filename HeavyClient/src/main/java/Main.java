@@ -7,6 +7,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
+
+import javax.jms.Connection;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
 public class Main {
     static ServiceLetsGoBiking service = new ServiceLetsGoBiking();
     static IServiceLetsGoBiking client = service.getBasicHttpBindingIServiceLetsGoBiking();
@@ -19,16 +32,43 @@ public class Main {
         System.out.println("Adresse d'arrivée :");
         String destination = scanner.nextLine();
 
-        String response = client.getItinerary(origin, destination);
+        String nbInstructionsString = client.getItinerary(origin, destination);
+        Integer nbInstructions = Integer.parseInt(nbInstructionsString);
 
         try {
-            List<String> instructions = new ObjectMapper().readValue(response,List.class);
-            for(String instruction : instructions){
-                System.out.print(instruction);
-                scanner.nextLine();
+            ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+
+            //Create Connection
+            Connection connection = factory.createConnection();
+
+            // Start the connection
+            connection.start();
+
+            // Create Session
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+            //Create queue
+            Destination queue = session.createQueue("test");
+
+            MessageConsumer consumer = session.createConsumer(queue);
+
+            for(int i=0; i < nbInstructions; i++){
+                Message message = consumer.receive();
+
+                if (message instanceof TextMessage) {
+                    TextMessage textMessage = (TextMessage) message;
+                    String text = textMessage.getText();
+                    System.out.println("Consumer Received: " + text);
+                }
             }
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+
+            session.close();
+            connection.close();
         }
+        catch (Exception ex) {
+            System.out.println("Exception Occured");
+        }
+
+    
     }
 }

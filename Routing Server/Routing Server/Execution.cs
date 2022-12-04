@@ -84,7 +84,7 @@ namespace Routing_Server
             ActiveMq activemq = new ActiveMq();
             activemq.lauchActiveMq(instructions);
 
-            return JsonSerializer.Serialize(instructions);
+            return instructions.Count.ToString();
         }
 
         public List<double[]> getCoordinatesForEachContract(Adresses adresses, List<Contract> contracts)
