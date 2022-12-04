@@ -15,21 +15,20 @@ namespace Routing_Server
 {
     public class Distances
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient client = new HttpClient();       
         
         public Distances() {
             if (client.DefaultRequestHeaders.Count() == 0)
             {
-                client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2");
-            }           
+                client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf62487da58fc5799a4c099ff9f4835fa66826");
+            }                       
         }
 
         public int getShortestDistance(List<double[]> coordinates, double[] userInput, string travelMethod)
         {
-            List<List<double>> durations = new List<List<double>>();
-            List<double> dur = new List<double>();
+            List<List<double>> durations = new List<List<double>>();            
             List<List<double[]>> chunkedStations = ChunkBy(coordinates, 30);
-
+            List<double> dur = new List<double>();
             List<Task<string>> tasks = new List<Task<string>>();
             foreach(var chunked in chunkedStations)
             {
@@ -45,38 +44,52 @@ namespace Routing_Server
                 string validString = response.Replace("null", "9.999");
                 DurationMatrix durationMatrix = JsonConvert.DeserializeObject<DurationMatrix>(validString);
                 durations = durationMatrix.durations;
-                foreach(var duration in durations[0])
-                {
-                    Console.WriteLine(duration);
-                }
                 durations[0].RemoveAt(0);
                 dur.AddRange(durations[0]);
             }
 
             int minIndex = -1;
-            double minValue = dur.Max();
-            
-            for(int i = 0; i < dur.Count; i++)
+            double minValue = dur.Min();
+            if(minValue != null)
             {
-                if (dur[i] != 9.999)
-                {
-                    if (dur[i] <= minValue)
-                    {
-                        minValue = dur[i];
-                        minIndex= i;
-                    }
-                }
-            }
+                minIndex = dur.IndexOf(minValue);
+            }         
 
             if(minIndex == -1)
             {
                 Console.WriteLine("Désolé, nous n'avons pas trouvé de stations suffisament proche de vous pour y aller à pied");
                 Console.ReadLine();
             }
-
-            Console.WriteLine("Val min trouvée : " + minValue);
+           
 
             return minIndex;
+        }
+
+        public List<double> getListOfDurationsPerStation(List<double[]> coordinates, double[] userInput, string travelMethod)
+        {
+            List<List<double>> durations = new List<List<double>>();
+            List<List<double[]>> chunkedStations = ChunkBy(coordinates, 30);
+            List<double> dur = new List<double>();
+            List<Task<string>> tasks = new List<Task<string>>();
+            foreach (var chunked in chunkedStations)
+            {
+                chunked.Insert(0, userInput);
+                Task<string> result = callMatrixEndpoint(chunked, travelMethod);
+                tasks.Add(result);
+            }
+
+            foreach (var task in tasks)
+            {
+                task.Wait();
+                string response = task.Result;
+                string validString = response.Replace("null", "9.999");
+                DurationMatrix durationMatrix = JsonConvert.DeserializeObject<DurationMatrix>(validString);
+                durations = durationMatrix.durations;
+                durations[0].RemoveAt(0);
+                dur.AddRange(durations[0]);
+            }
+
+            return dur;
         }
 
         public int findClosestContract(List<double[]> coordinates, double[] userInput)

@@ -38,4 +38,18 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="isABikeAvailableInStation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="station" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="isABikeAvailableInStationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="isABikeAvailableInStationResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

@@ -22,7 +22,7 @@ namespace Routing_Server
         {
             string encodedAdress = HttpUtility.UrlEncode(address);
 
-            string queryAddress = "geocode/search?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&text=" + encodedAdress;
+            string queryAddress = "geocode/search?api_key=5b3ce3597851110001cf6248068382780acc46bc940a29b5ce9e693f&text=" + encodedAdress;
             string responseAddress = callApi(openRouteUrl, queryAddress).Result;
 
             GeoCode geocodeAddress = JsonSerializer.Deserialize<GeoCode>(responseAddress);

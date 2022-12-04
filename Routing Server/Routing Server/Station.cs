@@ -13,6 +13,7 @@ namespace Routing_Server
         {
         }
 
+        public int number { get; set; }
         public string name { get; set; }
         public string contractName { get; set; }
         public string address { get; set; }

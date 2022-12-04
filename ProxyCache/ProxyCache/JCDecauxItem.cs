@@ -13,13 +13,13 @@ namespace ProxyCache
     internal class JCDecauxItem
     {
         public static string apiUrl = "https://api.jcdecaux.com/vls/v3/";
-        private string apiKey = "a20510ebde21e2f45630b65733ea766ea9a88778";
+        public static string apiKey = "apiKey=a20510ebde21e2f45630b65733ea766ea9a88778";
         private string contractsJson;
         private string stationsJson;
         public JCDecauxItem()
         {
-            contractsJson = Service1.callApi(apiUrl + "contracts?apiKey=" + apiKey).Result;
-            stationsJson = Service1.callApi(apiUrl + "stations?apiKey=" + apiKey).Result;
+            contractsJson = Service1.callApi(apiUrl + "contracts?" + apiKey).Result;
+            stationsJson = Service1.callApi(apiUrl + "stations?" + apiKey).Result;
         }
 
         public string getContracts()

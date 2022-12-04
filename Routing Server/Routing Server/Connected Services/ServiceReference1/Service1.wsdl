@@ -24,6 +24,12 @@
   <wsdl:message name="IService1_getStationsByContractName_OutputMessage">
     <wsdl:part name="parameters" element="tns:getStationsByContractNameResponse" />
   </wsdl:message>
+  <wsdl:message name="IService1_isABikeAvailableInStation_InputMessage">
+    <wsdl:part name="parameters" element="tns:isABikeAvailableInStation" />
+  </wsdl:message>
+  <wsdl:message name="IService1_isABikeAvailableInStation_OutputMessage">
+    <wsdl:part name="parameters" element="tns:isABikeAvailableInStationResponse" />
+  </wsdl:message>
   <wsdl:portType name="IService1">
     <wsdl:operation name="getContracts">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/getContracts" message="tns:IService1_getContracts_InputMessage" />
@@ -36,6 +42,10 @@
     <wsdl:operation name="getStationsByContractName">
       <wsdl:input wsaw:Action="http://tempuri.org/IService1/getStationsByContractName" message="tns:IService1_getStationsByContractName_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IService1/getStationsByContractNameResponse" message="tns:IService1_getStationsByContractName_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="isABikeAvailableInStation">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService1/isABikeAvailableInStation" message="tns:IService1_isABikeAvailableInStation_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService1/isABikeAvailableInStationResponse" message="tns:IService1_isABikeAvailableInStation_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IService1" type="tns:IService1">
@@ -60,6 +70,15 @@
     </wsdl:operation>
     <wsdl:operation name="getStationsByContractName">
       <soap:operation soapAction="http://tempuri.org/IService1/getStationsByContractName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="isABikeAvailableInStation">
+      <soap:operation soapAction="http://tempuri.org/IService1/isABikeAvailableInStation" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

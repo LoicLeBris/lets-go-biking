@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Text.Json;
 
 namespace Routing_Server
@@ -29,29 +30,50 @@ namespace Routing_Server
 
             List<Station> stationsOrigin = JsonSerializer.Deserialize<List<Station>>(proxyCache.getStationsByContractName(contracts[contractNumberOrigin].name));
             List<double[]> stationsCoordinates = getCoordinatesForEachStation(true, stationsOrigin);
-            int stationIndex = distance.getShortestDistance(stationsCoordinates, originCoordinates, "foot-walking");
-            instructions.Add("Origin Station:" + stationsOrigin[stationIndex]);
+            //int stationIndex = distance.getShortestDistance(stationsCoordinates, originCoordinates, "foot-walking");
+
+            List<double> durationsByStation = distance.getListOfDurationsPerStation(stationsCoordinates, originCoordinates, "foot-walking");
+            int indexOrigin = durationsByStation.IndexOf(durationsByStation.Min());
+            Console.WriteLine(durationsByStation.Min());
+            Console.WriteLine(proxyCache.isABikeAvailableInStation(JsonSerializer.Serialize(stationsOrigin[indexOrigin])));
+
+            while (proxyCache.isABikeAvailableInStation(JsonSerializer.Serialize(stationsOrigin[indexOrigin])) == false)
+            {
+                durationsByStation[indexOrigin] = durationsByStation.Max();
+                Console.WriteLine(durationsByStation.Min());
+                indexOrigin = durationsByStation.IndexOf(durationsByStation.Min());
+            }
+
+            instructions.Add("Origin Station:" + stationsOrigin[indexOrigin]);
 
             List<Station> stationsDest = stationsOrigin;
             if (!contracts[contractNumberOrigin].Equals(contracts[contractNumberDest]))
             {
-                stationsDest = JsonSerializer.Deserialize<List<Station>>(contracts[contractNumberDest].name);
-                stationsCoordinates = getCoordinatesForEachStation(false, stationsOrigin);
+                stationsDest = JsonSerializer.Deserialize<List<Station>>(proxyCache.getStationsByContractName(contracts[contractNumberDest].name));
+                stationsCoordinates = getCoordinatesForEachStation(false, stationsDest);
             }
-            
-            int stationIndexDest = distance.getShortestDistance(stationsCoordinates, destinationCoordinates, "foot-walking");
-            instructions.Add("Destination Station:" + stationsDest[stationIndexDest]);
 
-            instructions.Add("La station la plus proche est :" + stationsOrigin[stationIndex].ToString());
+            durationsByStation = distance.getListOfDurationsPerStation(stationsCoordinates, destinationCoordinates, "foot-walking");
+            int indexDest = durationsByStation.IndexOf(durationsByStation.Min());
+
+            while (proxyCache.isABikeAvailableInStation(JsonSerializer.Serialize(stationsDest[indexDest])) == false)
+            {
+                durationsByStation[indexDest] = durationsByStation.Max();
+                indexDest = durationsByStation.IndexOf(durationsByStation.Min());
+            }
+
+            instructions.Add("Destination Station:" + stationsDest[indexDest]);
+
+            instructions.Add("La station la plus proche est :" + stationsOrigin[indexOrigin].ToString());
 
             string originString = originCoordinates[0].ToString().Replace(',', '.') + "," + originCoordinates[1].ToString().Replace(',', '.');
             string destString = destinationCoordinates[0].ToString().Replace(',', '.') + "," + destinationCoordinates[1].ToString().Replace(',', '.');
 
-            Itineraire itineraire = new Itineraire(originString, destString, stationsOrigin[stationIndex], stationsDest[stationIndexDest]);
+            Itineraire itineraire = new Itineraire(originString, destString, stationsOrigin[indexOrigin], stationsDest[indexDest]);
 
             addInstructions(instructions, itineraire.getItineraryToDepartureStation());
 
-            instructions.Add("Vous pouvez récupérer un vélo à la station. Il y a de la route jusqu'à la prochaine station : " + stationsDest[stationIndexDest].ToString());
+            instructions.Add("Vous pouvez récupérer un vélo à la station. Il y a de la route jusqu'à la prochaine station : " + stationsDest[indexDest].ToString());
 
             addInstructions(instructions, itineraire.getItineraryToArrivalStation());
 
@@ -87,27 +109,11 @@ namespace Routing_Server
         {
             List<double[]> stationsCoordinates = new List<double[]>();
 
-            if (isPickingUpABike)
+
+            foreach (Station station in stations)
             {
-                foreach (Station station in stations)
-                {
-                    if (station.totalStands.availabilities.bikes > 0)
-                    {
-                        double[] stationCoordinates = { station.position.longitude, station.position.latitude };
-                        stationsCoordinates.Add(stationCoordinates);
-                    }
-                }
-            }
-            else
-            {
-                foreach (Station station in stations)
-                {
-                    if (station.totalStands.availabilities.stands > 0)
-                    {
-                        double[] stationCoordinates = { station.position.longitude, station.position.latitude };
-                        stationsCoordinates.Add(stationCoordinates);
-                    }
-                }
+                double[] stationCoordinates = { station.position.longitude, station.position.latitude };
+                stationsCoordinates.Add(stationCoordinates);
             }
 
             return stationsCoordinates;

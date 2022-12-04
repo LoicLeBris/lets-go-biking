@@ -19,5 +19,8 @@ namespace ProxyCache
 
         [OperationContract]
         string getStationsByContractName(string contractName);
+
+        [OperationContract]
+        bool isABikeAvailableInStation(string station);
     }
 }
