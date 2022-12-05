@@ -4,6 +4,7 @@ import com.client.ServiceLetsGoBiking;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.Console;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,13 +17,17 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-public class Main {
+public class Main implements MessageListener {
     static ServiceLetsGoBiking service = new ServiceLetsGoBiking();
     static IServiceLetsGoBiking client = service.getBasicHttpBindingIServiceLetsGoBiking();
+    static MessageConsumer consumer;
+    static Connection connection;
+    static Session session;
 
     public static void main(String[] args) {
 
@@ -32,43 +37,53 @@ public class Main {
         System.out.println("Adresse d'arrivée :");
         String destination = scanner.nextLine();
 
-        String nbInstructionsString = client.getItinerary(origin, destination);
-        Integer nbInstructions = Integer.parseInt(nbInstructionsString);
+        new Main().launchActiveMq();
 
+        client.getItinerary(origin, destination);
+        
+        try {
+            session.close();
+            connection.close();
+        } catch (Exception ex) {
+            System.out.println("Exception Occured");
+        }
+    }
+
+    public void launchActiveMq(){
         try {
             ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
             //Create Connection
-            Connection connection = factory.createConnection();
+            connection = factory.createConnection();
 
             // Start the connection
             connection.start();
 
             // Create Session
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
             //Create queue
             Destination queue = session.createQueue("test");
 
-            MessageConsumer consumer = session.createConsumer(queue);
-
-            for(int i=0; i < nbInstructions; i++){
-                Message message = consumer.receive();
-
-                if (message instanceof TextMessage) {
-                    TextMessage textMessage = (TextMessage) message;
-                    String text = textMessage.getText();
-                    System.out.println("Consumer Received: " + text);
-                }
-            }
-
-            session.close();
-            connection.close();
+            consumer = session.createConsumer(queue);
+            
+            consumer.setMessageListener(this);
         }
         catch (Exception ex) {
             System.out.println("Exception Occured");
         }
+    }
 
-    
+    @Override
+    public void onMessage(Message message) {
+        try{
+            if (message instanceof TextMessage) {
+                TextMessage textMessage = (TextMessage) message;
+                String text = textMessage.getText();
+                System.out.println(text);
+            }
+        } catch(java.lang.RuntimeException | JMSException e){
+            System.out.println("Error " + e);
+        }
     }
 }

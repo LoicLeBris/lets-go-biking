@@ -15,14 +15,16 @@ namespace Routing_Server
     {
         static readonly HttpClient client = new HttpClient();
         string openRouteUrl = "https://api.openrouteservice.org/";
-
-        public Adresses() { }
+        string token;
+        public Adresses(string token) {
+            this.token = token;
+        }
 
         public double[] getAddressCoordinates(string address)
         {
             string encodedAdress = HttpUtility.UrlEncode(address);
 
-            string queryAddress = "geocode/search?api_key=5b3ce3597851110001cf6248068382780acc46bc940a29b5ce9e693f&text=" + encodedAdress;
+            string queryAddress = "geocode/search?api_key="+ token +"&text=" + encodedAdress;
             string responseAddress = callApi(openRouteUrl, queryAddress).Result;
 
             GeoCode geocodeAddress = JsonSerializer.Deserialize<GeoCode>(responseAddress);

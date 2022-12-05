@@ -10,11 +10,14 @@ namespace Routing_Server
     internal class Execution
     {
         static readonly Service1Client proxyCache = new Service1Client();
-        public string method(string origin, string destination)
+        string token1 = "5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2";
+        string token2 = "5b3ce3597851110001cf62486b7528a4b8dc45c38139ff0899fa358f";
+        public void method(string origin, string destination)
         {
-            Adresses adresses = new Adresses();
-            Distances distance = new Distances();
+            Adresses adresses = new Adresses(token1);
+            Distances distance = new Distances(token2);
             List<string> instructions = new List<string>();
+            ActiveMq activemq = new ActiveMq();
 
             List<Contract> contracts = JsonSerializer.Deserialize<List<Contract>>(proxyCache.getContracts());
             List<double[]> coordinates = getCoordinatesForEachContract(adresses, contracts);
@@ -25,8 +28,10 @@ namespace Routing_Server
             int contractNumberOrigin = distance.findClosestContract(coordinates, originCoordinates);
             int contractNumberDest = distance.findClosestContract(coordinates, destinationCoordinates);
 
-            instructions.Add("Origin contract :" + contracts[contractNumberOrigin].ToString());                       
-            instructions.Add("Destination contract :" + contracts[contractNumberDest].ToString());            
+            instructions.Add("Origin contract :" + contracts[contractNumberOrigin].ToString());
+            activemq.sendMessage("Origin contract :" + contracts[contractNumberOrigin].ToString());
+            instructions.Add("Destination contract :" + contracts[contractNumberDest].ToString());
+            activemq.sendMessage("Destination contract :" + contracts[contractNumberDest].ToString());
 
             List<Station> stationsOrigin = JsonSerializer.Deserialize<List<Station>>(proxyCache.getStationsByContractName(contracts[contractNumberOrigin].name));
             List<double[]> stationsCoordinates = getCoordinatesForEachStation(true, stationsOrigin);
@@ -42,6 +47,7 @@ namespace Routing_Server
             }
 
             instructions.Add("Origin Station:" + stationsOrigin[indexOrigin]);
+            activemq.sendMessage("Origin Station:" + stationsOrigin[indexOrigin]);
 
             List<Station> stationsDest = stationsOrigin;
             if (!contracts[contractNumberOrigin].Equals(contracts[contractNumberDest]))
@@ -60,8 +66,10 @@ namespace Routing_Server
             }
 
             instructions.Add("Destination Station:" + stationsDest[indexDest]);
+            activemq.sendMessage("Destination Station:" + stationsDest[indexDest]);
 
             instructions.Add("La station la plus proche est :" + stationsOrigin[indexOrigin].ToString());
+            activemq.sendMessage("La station la plus proche est :" + stationsOrigin[indexOrigin].ToString());
 
             string originString = originCoordinates[0].ToString().Replace(',', '.') + "," + originCoordinates[1].ToString().Replace(',', '.');
             string destString = destinationCoordinates[0].ToString().Replace(',', '.') + "," + destinationCoordinates[1].ToString().Replace(',', '.');
@@ -69,19 +77,20 @@ namespace Routing_Server
             Itineraire itineraire = new Itineraire(originString, destString, stationsOrigin[indexOrigin], stationsDest[indexDest]);
 
             addInstructions(instructions, itineraire.getItineraryToDepartureStation());
+            activemq.sendMessages(getInstructions(itineraire.getItineraryToDepartureStation()));
 
             instructions.Add("Vous pouvez récupérer un vélo à la station. Il y a de la route jusqu'à la prochaine station : " + stationsDest[indexDest].ToString());
+            activemq.sendMessage("Vous pouvez récupérer un vélo à la station. Il y a de la route jusqu'à la prochaine station : " + stationsDest[indexDest].ToString());
 
             addInstructions(instructions, itineraire.getItineraryToArrivalStation());
+            activemq.sendMessages(getInstructions(itineraire.getItineraryToArrivalStation()));
 
             instructions.Add("Laissez votre vélo ici et finissez le chemin à pied :");
+            activemq.sendMessage("Laissez votre vélo ici et finissez le chemin à pied :");
 
             addInstructions(instructions, itineraire.getItineraryToDestinationAdress());
+            activemq.sendMessages(getInstructions(itineraire.getItineraryToDestinationAdress()));
 
-            ActiveMq activemq = new ActiveMq();
-            activemq.lauchActiveMq(instructions);
-
-            return instructions.Count.ToString();
         }
 
         public List<double[]> getCoordinatesForEachContract(Adresses adresses, List<Contract> contracts)
@@ -123,6 +132,16 @@ namespace Routing_Server
             {
                 instructions.Add(step.instruction + " on " + step.distance + "m");
             }
+        }
+
+        private List<String> getInstructions(Steps[] steps)
+        {
+            List<string> instructions = new List<string>();
+            foreach (Steps step in steps)
+            {
+                instructions.Add(step.instruction + " on " + step.distance + "m");
+            }
+            return instructions;
         }
     }    
 }

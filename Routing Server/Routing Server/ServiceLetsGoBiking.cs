@@ -11,7 +11,8 @@ namespace Routing_Server
         Execution execution = new Execution();
         public string GetItinerary(string a, string b)
         {
-            return execution.method(a, b);
+            execution.method(a, b);
+            return "test";
         }
     }
 }

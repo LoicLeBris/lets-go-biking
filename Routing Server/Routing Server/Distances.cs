@@ -17,17 +17,17 @@ namespace Routing_Server
     {
         private static readonly HttpClient client = new HttpClient();       
         
-        public Distances() {
+        public Distances(string token) {
             if (client.DefaultRequestHeaders.Count() == 0)
             {
-                client.DefaultRequestHeaders.Add("Authorization", "5b3ce3597851110001cf6248068382780acc46bc940a29b5ce9e693f");
+                client.DefaultRequestHeaders.Add("Authorization", token);
             }                       
         }
        
         public List<double> getListOfDurationsPerStation(List<double[]> coordinates, double[] userInput, string travelMethod)
         {
             List<List<double>> durations = new List<List<double>>();
-            List<List<double[]>> chunkedStations = ChunkBy(coordinates, 30);
+            List<List<double[]>> chunkedStations = ChunkBy(coordinates, 40);
             List<double> dur = new List<double>();
             List<Task<string>> tasks = new List<Task<string>>();
             foreach (var chunked in chunkedStations)
