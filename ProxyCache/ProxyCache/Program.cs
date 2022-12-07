@@ -39,6 +39,7 @@ namespace ProxyCache
             //Start the Service
             host.Open();
 
+            Console.WriteLine("-------------PROXY CACHE SERVER----------------");
             Console.WriteLine("Service is host at " + DateTime.Now.ToString());
             Console.WriteLine("Host is running... Press <Enter> key to stop");
             Console.ReadLine();
