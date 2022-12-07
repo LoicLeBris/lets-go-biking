@@ -27,40 +27,69 @@ namespace Routing_Server
             this.arrivalStation = arrivalStation;
         }
 
-        public Steps[] getItineraryToDepartureStation()
+        public Directions getItineraryToDepartureStation()
         { 
             string queryItinerary = "v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + origin + "&end=" + departureStation.position.ToString();            
             string responseAddress = callApi(openRouteUrl, queryItinerary).Result;
 
             Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);
-            Steps[] steps = directions.features[0].properties.segments[0].steps;
-
-            return steps;
+            return directions;
         }
 
-        public Steps[] getItineraryToArrivalStation()
+        public Directions getItineraryToArrivalStation()
         {
             string queryItinerary = "v2/directions/cycling-regular?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + departureStation.position.ToString() + "&end=" + arrivalStation.position.ToString();
 
             string responseAddress = callApi(openRouteUrl, queryItinerary).Result;
 
             Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);
-            Steps[] steps = directions.features[0].properties.segments[0].steps;
-
-            return steps;
+            return directions;
         }
 
-        public Steps[] getItineraryToDestinationAdress()
+        public Directions getItineraryToDestinationAdress()
         {           
             string queryItinerary = "v2/directions/cycling-regular?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + arrivalStation.position.ToString() + "&end=" + destination;
 
             string responseAddress = callApi(openRouteUrl, queryItinerary).Result;
 
-            Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);
-            Steps[] steps = directions.features[0].properties.segments[0].steps;
+            Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);           
 
-            return steps;
+            return directions;
         }
+
+        public List<Directions> GetDirections()
+        {
+            List<Directions> directions = new List<Directions>();
+            directions.Add(getItineraryToDepartureStation());
+            directions.Add(getItineraryToArrivalStation());
+            directions.Add(getItineraryToDestinationAdress());
+            return directions;
+        }       
+        
+
+        public List<Directions> getItineraryFromOriginToDestinationByWalk()
+        {
+            string queryItinerary = "v2/directions/foot-walking?api_key=5b3ce3597851110001cf62482172e1aa1d5a469c9e68b05c8e06cfe2&start=" + origin + "&end=" + destination;
+
+            string responseAddress = callApi(openRouteUrl, queryItinerary).Result;
+            List<Directions> list = new List<Directions>();
+            Directions directions = JsonSerializer.Deserialize<Directions>(responseAddress);
+            list.Add(directions);
+            return list;
+        }
+
+        public double getDuration(List<Directions> directions)
+        {
+            double duration = 0;
+            foreach (Directions direction in directions)
+            {
+                Console.WriteLine("Temps de chaque segment :" + direction.features[0].properties.segments[0].duration);
+                duration += direction.features[0].properties.segments[0].duration;
+            }
+
+            return duration;
+        }
+
 
         static async Task<string> callApi(string url, string query)
         {

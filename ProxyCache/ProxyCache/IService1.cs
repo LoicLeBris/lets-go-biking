@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
+using System.ServiceModel.Web;
 using System.Text;
 
 namespace ProxyCache
@@ -11,7 +12,7 @@ namespace ProxyCache
     [ServiceContract]
     public interface IService1
     {
-        [OperationContract]
+        [OperationContract]        
         string getContracts();
 
         [OperationContract]

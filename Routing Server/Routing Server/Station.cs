@@ -23,9 +23,7 @@ namespace Routing_Server
 
         public override string ToString()
         {
-            return "name : " + name 
-                + "\naddress :" + address 
-                + "\ncontractName :" + contractName;
+            return "" + name + " at : " + address;
         }
     }
 

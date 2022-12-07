@@ -15,9 +15,10 @@ namespace Routing_Server
         public void method(string origin, string destination)
         {
             Adresses adresses = new Adresses(token1);
-            Distances distance = new Distances(token2);
-            List<string> instructions = new List<string>();
+            Distances distance = new Distances(token2);           
             ActiveMq activemq = new ActiveMq();
+
+            activemq.sendMessage("We are currently considering your request... Please wait...");
 
             List<Contract> contracts = JsonSerializer.Deserialize<List<Contract>>(proxyCache.getContracts());
             List<double[]> coordinates = getCoordinatesForEachContract(adresses, contracts);
@@ -26,16 +27,13 @@ namespace Routing_Server
             double[] destinationCoordinates = adresses.getAddressCoordinates(destination);
 
             int contractNumberOrigin = distance.findClosestContract(coordinates, originCoordinates);
-            int contractNumberDest = distance.findClosestContract(coordinates, destinationCoordinates);
+            int contractNumberDest = distance.findClosestContract(coordinates, destinationCoordinates);            
 
-            instructions.Add("Origin contract :" + contracts[contractNumberOrigin].ToString());
-            activemq.sendMessage("Origin contract :" + contracts[contractNumberOrigin].ToString());
-            instructions.Add("Destination contract :" + contracts[contractNumberDest].ToString());
+            activemq.sendMessage("Origin contract :" + contracts[contractNumberOrigin].ToString());            
             activemq.sendMessage("Destination contract :" + contracts[contractNumberDest].ToString());
 
             List<Station> stationsOrigin = JsonSerializer.Deserialize<List<Station>>(proxyCache.getStationsByContractName(contracts[contractNumberOrigin].name));
-            List<double[]> stationsCoordinates = getCoordinatesForEachStation(true, stationsOrigin);
-            //int stationIndex = distance.getShortestDistance(stationsCoordinates, originCoordinates, "foot-walking");
+            List<double[]> stationsCoordinates = getCoordinatesForEachStation(true, stationsOrigin);           
 
             List<double> durationsByStation = distance.getListOfDurationsPerStation(stationsCoordinates, originCoordinates, "foot-walking");
             int indexOrigin = durationsByStation.IndexOf(durationsByStation.Min());
@@ -44,10 +42,7 @@ namespace Routing_Server
             {
                 durationsByStation[indexOrigin] = durationsByStation.Max();                
                 indexOrigin = durationsByStation.IndexOf(durationsByStation.Min());
-            }
-
-            instructions.Add("Origin Station:" + stationsOrigin[indexOrigin]);
-            activemq.sendMessage("Origin Station:" + stationsOrigin[indexOrigin]);
+            }                        
 
             List<Station> stationsDest = stationsOrigin;
             if (!contracts[contractNumberOrigin].Equals(contracts[contractNumberDest]))
@@ -63,33 +58,40 @@ namespace Routing_Server
             {
                 durationsByStation[indexDest] = durationsByStation.Max();
                 indexDest = durationsByStation.IndexOf(durationsByStation.Min());
-            }
-
-            instructions.Add("Destination Station:" + stationsDest[indexDest]);
-            activemq.sendMessage("Destination Station:" + stationsDest[indexDest]);
-
-            instructions.Add("La station la plus proche est :" + stationsOrigin[indexOrigin].ToString());
-            activemq.sendMessage("La station la plus proche est :" + stationsOrigin[indexOrigin].ToString());
+            }           
+                        
 
             string originString = originCoordinates[0].ToString().Replace(',', '.') + "," + originCoordinates[1].ToString().Replace(',', '.');
             string destString = destinationCoordinates[0].ToString().Replace(',', '.') + "," + destinationCoordinates[1].ToString().Replace(',', '.');
 
             Itineraire itineraire = new Itineraire(originString, destString, stationsOrigin[indexOrigin], stationsDest[indexDest]);
+            List<Directions> directionsByBike = itineraire.GetDirections();
+            List<Directions> directionsByWalk = itineraire.getItineraryFromOriginToDestinationByWalk();
+            double durationTotalByBike = itineraire.getDuration(directionsByBike);
+            double durationByWalk = itineraire.getDuration(directionsByWalk);
 
-            addInstructions(instructions, itineraire.getItineraryToDepartureStation());
-            activemq.sendMessages(getInstructions(itineraire.getItineraryToDepartureStation()));
+            Console.WriteLine("Duration by bike : " + durationTotalByBike + ", Duration by walk : " + durationByWalk);
 
-            instructions.Add("Vous pouvez récupérer un vélo à la station. Il y a de la route jusqu'à la prochaine station : " + stationsDest[indexDest].ToString());
-            activemq.sendMessage("Vous pouvez récupérer un vélo à la station. Il y a de la route jusqu'à la prochaine station : " + stationsDest[indexDest].ToString());
+            if (durationTotalByBike > durationByWalk)
+            {
+                activemq.sendMessage("You can go by walk, it will be quicker");
+                activemq.sendMessages(getInstructions(directionsByWalk[0]));
+            }
+            else
+            {
+                activemq.sendMessage("The closest departure station is :" + stationsOrigin[indexOrigin].ToString());
 
-            addInstructions(instructions, itineraire.getItineraryToArrivalStation());
-            activemq.sendMessages(getInstructions(itineraire.getItineraryToArrivalStation()));
+                activemq.sendMessages(getInstructions(directionsByBike[0]));
 
-            instructions.Add("Laissez votre vélo ici et finissez le chemin à pied :");
-            activemq.sendMessage("Laissez votre vélo ici et finissez le chemin à pied :");
+                activemq.sendMessage("Vous pouvez récupérer un vélo à la station. Il y a de la route jusqu'à la prochaine station : " + stationsDest[indexDest].ToString());
 
-            addInstructions(instructions, itineraire.getItineraryToDestinationAdress());
-            activemq.sendMessages(getInstructions(itineraire.getItineraryToDestinationAdress()));
+                activemq.sendMessages(getInstructions(directionsByBike[1]));
+
+                activemq.sendMessage("Laissez votre vélo ici et finissez le chemin à pied :");
+
+                activemq.sendMessages(getInstructions(directionsByBike[2]));
+            }
+            
 
         }
 
@@ -134,10 +136,10 @@ namespace Routing_Server
             }
         }
 
-        private List<String> getInstructions(Steps[] steps)
+        private List<String> getInstructions(Directions directions)
         {
             List<string> instructions = new List<string>();
-            foreach (Steps step in steps)
+            foreach (Steps step in directions.features[0].properties.segments[0].steps)
             {
                 instructions.Add(step.instruction + " on " + step.distance + "m");
             }

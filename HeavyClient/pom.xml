@@ -34,6 +34,11 @@
             <artifactId>activemq-broker</artifactId>
             <version>5.14.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.17.2</version>
+        </dependency>
     </dependencies>
 
     <build>
