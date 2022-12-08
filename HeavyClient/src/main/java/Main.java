@@ -3,6 +3,7 @@ import com.client.ServiceLetsGoBiking;
 
 import java.util.Scanner;
 
+import com.sun.xml.ws.fault.ServerSOAPFaultException;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.Connection;
@@ -23,21 +24,30 @@ public class Main implements MessageListener {
 
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Adresse de départ :");
-        String origin = scanner.nextLine();
-        System.out.println("Adresse d'arrivée :");
-        String destination = scanner.nextLine();
+        try{
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Adresse de départ :");
+            String origin = scanner.nextLine();
+            System.out.println("Adresse d'arrivée :");
+            String destination = scanner.nextLine();
 
-        new Main().launchActiveMq();
+            new Main().launchActiveMq();
 
-        client.getItinerary(origin, destination);
-        
-        try {
-            session.close();
-            connection.close();
-        } catch (Exception ex) {
-            System.out.println("Exception Occured");
+            client.getItinerary(origin, destination);
+
+            scanner.nextLine();
+
+            System.out.println("Do you want to enter another itinerary ? (y/n)");
+            if(scanner.nextLine().equals("y")){
+                main(null);
+            }
+            else{
+                session.close();
+                connection.close();
+            }
+        } catch (ServerSOAPFaultException | JMSException e) {
+            System.out.println(e.getMessage());
+            main(null);
         }
     }
 
