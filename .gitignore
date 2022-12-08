@@ -17,13 +17,6 @@
 x64/
 x86/
 bld/
-[Bb]in/
-!*.exe
-!*/
-*.dll
-*.xml
-*.config
-x64/
 
 [Oo]bj/
 [Ll]og/
