@@ -8,7 +8,7 @@ Ce projet a pour but de manipuler les appels à différentes api, créer des ser
 
 ## Initialiser l'execution du programme
 
-Avant de lancer le programme, assurez vous que le .exe du Routing Server soit uniquement démarrable en tant qu'Administrateur. Pour cela, déplacez vous dans le dossier Routing Server/bin/Debug/ et modifiez les propriétés du fichier Routing Server.exe pour obliger à le lancer en tant qu'Administrateur.
+Avant de lancer le programme, assurez vous que le .exe du Routing Server soit uniquement démarrable en tant qu'Administrateur. Pour cela, déplacez vous dans le dossier Routing Server/bin/Debug/ et si ce n'est pas déjà fait, modifiez les propriétés du fichier Routing Server.exe pour obliger à le lancer en tant qu'Administrateur.
 
 ![Propriétés](img.png "Propriétés du fichier Routing Server.exe")
 
