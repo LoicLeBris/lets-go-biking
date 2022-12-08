@@ -11,7 +11,6 @@
 *.userprefs
 *.vscode
 # Build results
-[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -19,6 +18,13 @@ x64/
 x86/
 bld/
 [Bb]in/
+!*.exe
+!*/
+*.dll
+*.xml
+*.config
+x64/
+
 [Oo]bj/
 [Ll]og/
 
@@ -244,13 +250,11 @@ paket-files/
 .idea/
 *.sln.iml
 Routing Server/.vs/Routing Server/v17/.suo
-Routing Server/Routing Server/bin/Debug/Routing Server.exe
 Routing Server/Routing Server/bin/Debug/Routing Server.pdb
 Routing Server/Routing Server/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 Routing Server/Routing Server/obj/Debug/Routing Server.csproj.AssemblyReference.cache
 Routing Server/Routing Server/obj/Debug/Routing Server.csproj.CoreCompileInputs.cache
 Routing Server/Routing Server/obj/Debug/Routing Server.csproj.FileListAbsolute.txt
-Routing Server/Routing Server/obj/Debug/Routing Server.exe
 Routing Server/Routing Server/obj/Debug/Routing Server.pdb
 HeavyClient/target/HeavyClient-1.0-SNAPSHOT.war
 HeavyClient/target/HeavyClient-1.0-SNAPSHOT/index.jsp
